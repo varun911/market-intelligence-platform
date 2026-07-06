@@ -1,37 +1,117 @@
 import { useState } from "react";
 import axios from "axios";
+import StockChart from "./components/StockChart";
 
 function App() {
   const [ticker, setTicker] = useState("AAPL");
   const [data, setData] = useState(null);
+  const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const fetchData = async () => {
-    const res = await axios.get(`http://127.0.0.1:8000/analytics/${ticker}`);
+    setLoading(true);
+    try {
+      // Fetch both endpoints in parallel
+      const [resAnalytics, resHistory] = await Promise.all([
+        axios.get(`http://127.0.0.1:8000/analytics/${ticker}`),
+        // Historical Price endpoint
+        axios.get(`http://127.0.0.1:8000/history/${ticker}`),
+      ]);
+      console.log("Analytics:", resAnalytics.data);
+      console.log("History:", resHistory.data);
+      console.log("History length:", resHistory.data.records?.length);
 
-    setData(res.data);
+      setData(resAnalytics.data);
+      setHistory(resHistory.data.records || []);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+    setLoading(false);
   };
 
+  // First div with the ticker input and analyze button
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1>Market Intelligence Platform</h1>
+    <div className="min-h-screen bg-[#22223b] p-8">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-4xl font-bold text-center mb-8 text-white">
+          Market Intelligence Platform
+        </h1>
 
-      <input value={ticker} onChange={(e) => setTicker(e.target.value)} />
-
-      <button onClick={fetchData}>Analyze</button>
-
-      {data && (
-        <div>
-          <h2>{data.ticker}</h2>
-
-          <p>Return: {data.return_pct}%</p>
-
-          <p>Volatility: {data.volatility_pct}%</p>
-
-          <p>7 Day MA: {data.ma_7}</p>
-
-          <p>30 Day MA: {data.ma_30}</p>
+        <div className="flex gap-3 mb-8">
+          <input
+            value={ticker}
+            onChange={(e) => setTicker(e.target.value.toUpperCase())}
+            placeholder="Enter ticker..."
+            className="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-[#f2e9e4] focus:ring-10 focus:ring-[#f2e9e4]/20"
+          />
+          <button
+            onClick={fetchData}
+            className="px-6 py-3 bg-[#c9ada7] hover:bg-[#f2e9e4] rounded-xl font-bold hover:scale-105 active:scale-95"
+          >
+            Analyze
+          </button>
         </div>
-      )}
+
+        {/* First card with the analytics data that is pulled from the python backend, showcases the following:
+        - Return
+        - Volatility
+        - 7 Day Moving Average
+        - 30 Day Moving Average
+        */}
+
+        {data && (
+          <div className="bg-[#4a4e69] backdrop-blur-sm border border-gray-700 rounded-2xl p-6 shadow-2xl">
+            <h2 className="text-4xl font-bold mb-4 text-white text-center">
+              {data.ticker}
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="bg-gray-700 rounded-xl px-4 py-3 flex justify-between items-center">
+                <span className="text-white text-2xl">Return</span>
+                <span
+                  className={`font-bold text-2xl ${data.return_pct >= 0 ? "text-green-400" : "text-red-400"}`}
+                >
+                  {data.return_pct}%
+                </span>
+              </div>
+
+              <div className="bg-gray-700 rounded-xl px-4 py-3 flex justify-between items-center">
+                <span className="text-white text-2xl">Volatility</span>
+                <span className="font-bold text-2xl text-blue-400">
+                  {data.volatility_pct}%
+                </span>
+              </div>
+
+              <div className="bg-gray-700 rounded-xl px-4 py-3 flex justify-between items-center">
+                <span className="text-white text-2xl">7 Day MA</span>
+                <span className="font-bold text-2xl text-yellow-400">
+                  ${data.ma_7}
+                </span>
+              </div>
+
+              <div className="bg-gray-700 rounded-xl px-4 py-3 flex justify-between items-center">
+                <span className="text-white text-2xl">30 Day MA</span>
+                <span className="font-bold text-2xl text-purple-400">
+                  ${data.ma_30}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Creating a second card to showcase the historical price data/chart */}
+
+      <div className="bg-[#4a4e69] backdrop-blur-sm border border-gray-700 rounded-2xl p-6 mt-6 shadow-2xl">
+        <h2 className="text-4xl font-bold mb-4 text-white text-center">
+          Historical Price Data
+        </h2>
+        {history.length > 0 && (
+          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-6 shadow-2xl">
+            <StockChart history={history} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
