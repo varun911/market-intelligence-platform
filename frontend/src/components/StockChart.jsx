@@ -43,8 +43,11 @@ function StockChart({ history }) {
   };
 
   return (
-    <div style={{ height: "400px" }}>
-      <Line data={data} />
+    <div style={{ height: "400px", width: "100%", position: "relative" }}>
+      <Line
+        data={data}
+        options={{ responsive: true, maintainAspectRatio: false }}
+      />
     </div>
   );
 }

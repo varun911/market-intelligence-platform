@@ -1,28 +1,36 @@
 import { useState } from "react";
 import axios from "axios";
 import StockChart from "./components/StockChart";
+import CompareStocks from "./components/CompareStocks";
 
 function App() {
   const [ticker, setTicker] = useState("AAPL");
   const [data, setData] = useState(null);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [compareTickers, setCompareTickers] = useState("AAPL,MSFT,NVDA");
+  const [comparisonData, setComparisonData] = useState([]);
 
   const fetchData = async () => {
     setLoading(true);
     try {
       // Fetch both endpoints in parallel
-      const [resAnalytics, resHistory] = await Promise.all([
+      const [resAnalytics, resHistory, resComparison] = await Promise.all([
+        // Analytics endpoint
         axios.get(`http://127.0.0.1:8000/analytics/${ticker}`),
         // Historical Price endpoint
         axios.get(`http://127.0.0.1:8000/history/${ticker}`),
+        // Compare Stocks endpoint
+        axios.get(`http://127.0.0.1:8000/compare?tickers=${compareTickers}`),
       ]);
       console.log("Analytics:", resAnalytics.data);
       console.log("History:", resHistory.data);
       console.log("History length:", resHistory.data.records?.length);
+      console.log("Comparison Data:", resComparison.data);
 
       setData(resAnalytics.data);
       setHistory(resHistory.data.records || []);
+      setComparisonData(resComparison.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -111,6 +119,14 @@ function App() {
             <StockChart history={history} />
           </div>
         )}
+      </div>
+
+      <hr />
+      <div className="bg-[#4a4e69] backdrop-blur-sm border border-gray-700 rounded-2xl p-6 mt-6 shadow-2xl">
+        <h2 className="text-4xl font-bold mb-4 text-white text-center">
+          Compare Stocks
+        </h2>
+        <CompareStocks />
       </div>
     </div>
   );
