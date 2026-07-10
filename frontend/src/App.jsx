@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import StockChart from "./components/StockChart";
 import CompareStocks from "./components/CompareStocks";
+import PortfolioAnalyzer from "./components/PortfolioAnalyzer";
 
 function App() {
   const [ticker, setTicker] = useState("AAPL");
@@ -121,12 +122,19 @@ function App() {
         )}
       </div>
 
-      <hr />
       <div className="bg-[#4a4e69] backdrop-blur-sm border border-gray-700 rounded-2xl p-6 mt-6 shadow-2xl">
         <h2 className="text-4xl font-bold mb-4 text-white text-center">
           Compare Stocks
         </h2>
         <CompareStocks />
+        <hr className="text-white" />
+      </div>
+
+      <div className="bg-[#4a4e69] backdrop-blur-sm border border-gray-700 rounded-2xl p-6 mt-6 shadow-2xl">
+        <h2 className="text-4xl font-bold mb-4 text-white text-center">
+          Portfolio Analyzer
+        </h2>
+        <PortfolioAnalyzer />
       </div>
     </div>
   );

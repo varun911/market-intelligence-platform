@@ -45,7 +45,9 @@ function CompareStocks() {
     <div>
       <h2 className="text-2xl font-bold text-white mb-4 mx-5 text-left">
         Input the Stock Codes for Comparison:
+        <hr />
       </h2>
+
       <div className="flex gap-3 mb-8">
         <input
           type="text"
@@ -71,14 +73,26 @@ function CompareStocks() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-700">
-                <th className="text-left py-3 px-4 text-gray-400 text-2xl font-bold text-white">
+                <th className="text-left py-3 px-4 text-2xl font-bold text-white">
                   Rank
                 </th>
-                <th className="text-left py-3 px-4 text-gray-400 text-2xl font-bold text-white">
+                <th className="text-left py-3 px-4 text-2xl font-bold text-white">
                   Ticker
                 </th>
-                <th className="text-right py-3 px-4 text-gray-400 text-2xl font-bold text-white">
+                <th className="text-left py-3 px-4 text-2xl font-bold text-white">
+                  Price
+                </th>
+                <th className="text-right py-3 px-4 text-2xl font-bold text-white">
                   Return %
+                </th>
+                <th className="text-right py-3 px-4 text-2xl font-bold text-white">
+                  Volatility %
+                </th>
+                <th className="text-right py-3 px-4 text-2xl font-bold text-white">
+                  7 Day MA
+                </th>
+                <th className="text-right py-3 px-4 text-2xl font-bold text-white">
+                  30 Day MA
                 </th>
               </tr>
             </thead>
@@ -89,15 +103,27 @@ function CompareStocks() {
                   className="border-b border-gray-700/50 hover:bg-gray-700/30 transition-colors"
                 >
                   <td className="py-3 px-4 text-white text-xl font-bold">
-                    #{index + 1}
+                    # {index + 1}
                   </td>
                   <td className="py-3 px-4 text-white text-xl font-bold">
                     {stock.ticker}
+                  </td>
+                  <td className="py-3 px-4 text-white text-xl font-bold">
+                    $ {stock.price}
                   </td>
                   <td
                     className={`py-3 px-4 text-right text-xl font-bold ${stock.return_pct >= 0 ? "text-green-400" : "text-red-400"}`}
                   >
                     {stock.return_pct}%
+                  </td>
+                  <td className="py-3 px-4 text-white text-xl font-bold">
+                    {stock.volatility_pct}%
+                  </td>
+                  <td className="py-3 px-4 text-white text-xl font-bold">
+                    $ {stock.ma_7}
+                  </td>
+                  <td className="py-3 px-4 text-white text-xl font-bold">
+                    $ {stock.ma_30}
                   </td>
                 </tr>
               ))}
