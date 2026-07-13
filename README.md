@@ -6,6 +6,12 @@ Built as an end-to-end analytics application combining **Python, FastAPI, React,
 
 #
 
+# Live Demo
+
+https://market-intelligence-platform-omega.vercel.app/
+
+#
+
 # Project Overview
 
 The Market Intelligence Platform is a web-based financial analytics application designed to transform raw market data into actionable insights.
